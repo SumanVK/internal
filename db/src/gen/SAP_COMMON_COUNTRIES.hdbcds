@@ -1,0 +1,5 @@
+entity SAP_COMMON_COUNTRIES {
+  key CODE : String(3);
+  NAME : String(5000);
+  DESCR : String(5000);
+};

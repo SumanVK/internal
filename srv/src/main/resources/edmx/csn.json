@@ -1,0 +1,938 @@
+{
+  "definitions": {
+    "CatalogService": {
+      "kind": "service",
+      "@source": "srv/cat-service.cds"
+    },
+    "CatalogService.Books": {
+      "kind": "entity",
+      "@readonly": true,
+      "source": "my.bookshop.Books",
+      "elements": {
+        "ID": {
+          "value": {
+            "=": "Books.ID"
+          },
+          "key": true,
+          "@Common.Label": "Id",
+          "type": "cds.Integer",
+          "@cds.persistence.name": "ID"
+        },
+        "title": {
+          "value": {
+            "=": "Books.title"
+          },
+          "@Common.Label": "Title",
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "TITLE"
+        },
+        "author": {
+          "value": {
+            "=": "Books.author"
+          },
+          "@Common.Text": {
+            "=": "author/name"
+          },
+          "@Common.Label": "Author",
+          "@sap.value.list": "fixed-values",
+          "@Common.ValueList.CollectionPath": "Authors",
+          "@Common.ValueList.Label": "Authors",
+          "@Common.ValueList.SearchSupported": "true",
+          "@Common.ValueList.Parameters": [
+            {
+              "$Type": "Common.ValueListParameterOut",
+              "LocalDataProperty": "author_ID",
+              "ValueListProperty": "ID"
+            },
+            {
+              "$Type": "Common.ValueListParameterDisplayOnly",
+              "ValueListProperty": "name"
+            }
+          ],
+          "type": "cds.Association",
+          "target": "CatalogService.Authors",
+          "foreignKeys": {
+            "ID": {
+              "path": "ID",
+              "generatedFieldName": "author_ID",
+              "@cds.persistence.name": "ID"
+            }
+          },
+          "redirected": true,
+          "@cds.persistence.name": "AUTHOR"
+        },
+        "stock": {
+          "value": {
+            "=": "Books.stock"
+          },
+          "@Common.Label": "Stock",
+          "type": "cds.Integer",
+          "@cds.persistence.name": "STOCK"
+        },
+        "author_ID": {
+          "type": "cds.Integer",
+          "value": {
+            "=": "author_ID"
+          },
+          "@odata.foreignKey4": "author",
+          "@Common.Text": {
+            "=": "author/name"
+          },
+          "@Common.Label": "Author",
+          "@sap.value.list": "fixed-values",
+          "@Common.ValueList.CollectionPath": "Authors",
+          "@Common.ValueList.Label": "Authors",
+          "@Common.ValueList.SearchSupported": "true",
+          "@Common.ValueList.Parameters": [
+            {
+              "$Type": "Common.ValueListParameterOut",
+              "LocalDataProperty": "author_ID",
+              "ValueListProperty": "ID"
+            },
+            {
+              "$Type": "Common.ValueListParameterDisplayOnly",
+              "ValueListProperty": "name"
+            }
+          ],
+          "@cds.persistence.name": "AUTHOR_ID"
+        }
+      },
+      "@UI.LineItem": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "ID"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "title"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "stock"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "author/name"
+          }
+        }
+      ],
+      "@UI.HeaderInfo.Title.Value": {
+        "=": "title"
+      },
+      "@UI.HeaderInfo.TypeName": "Book",
+      "@UI.HeaderInfo.TypeNamePlural": "Books",
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "ID"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "title"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "author/name"
+          }
+        }
+      ],
+      "@UI.Facets": [
+        {
+          "$Type": "UI.CollectionFacet",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Label": "General Info",
+              "Target": "@UI.Identification"
+            }
+          ],
+          "Label": "Book Details"
+        },
+        {
+          "$Type": "UI.ReferenceFacet",
+          "Label": "Orders",
+          "Target": "orders/@UI.LineItem"
+        }
+      ],
+      "@Capabilities.DeleteRestrictions.Deletable": false,
+      "@Capabilities.InsertRestrictions.Insertable": false,
+      "@Capabilities.UpdateRestrictions.Updatable": false,
+      "@cds.persistence.name": "CATALOGSERVICE_BOOKS"
+    },
+    "CatalogService.Authors": {
+      "kind": "entity",
+      "@readonly": true,
+      "source": "my.bookshop.Authors",
+      "elements": {
+        "ID": {
+          "value": {
+            "=": "Authors.ID"
+          },
+          "key": true,
+          "type": "cds.Integer",
+          "@cds.persistence.name": "ID"
+        },
+        "name": {
+          "value": {
+            "=": "Authors.name"
+          },
+          "@Common.Label": "Author",
+          "type": "cds.String",
+          "@cds.persistence.name": "NAME"
+        },
+        "books": {
+          "value": {
+            "=": "Authors.books"
+          },
+          "type": "cds.Association",
+          "target": "CatalogService.Books",
+          "cardinality": {
+            "targetMax": "*"
+          },
+          "onCond": {
+            "op": "=",
+            "args": [
+              {
+                "=": "books.author"
+              },
+              {
+                "=": "$self"
+              }
+            ]
+          },
+          "on": "books.author = $self",
+          "redirected": true,
+          "@cds.persistence.name": "BOOKS"
+        }
+      },
+      "@Capabilities.DeleteRestrictions.Deletable": false,
+      "@Capabilities.InsertRestrictions.Insertable": false,
+      "@Capabilities.UpdateRestrictions.Updatable": false,
+      "@cds.persistence.name": "CATALOGSERVICE_AUTHORS"
+    },
+    "CatalogService.Orders": {
+      "kind": "entity",
+      "@insertonly": true,
+      "source": "my.bookshop.Orders",
+      "elements": {
+        "createdAt": {
+          "value": {
+            "=": "Orders.createdAt"
+          },
+          "@Common.Label": "Date",
+          "@Common.FieldControl": {
+            "#": "ReadOnly"
+          },
+          "type": "cds.DateTime",
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@odata.on.insert": {
+            "#": "now"
+          },
+          "@cds.persistence.name": "CREATEDAT"
+        },
+        "createdBy": {
+          "value": {
+            "=": "Orders.createdBy"
+          },
+          "@Common.Label": "Buyer",
+          "@Common.FieldControl": {
+            "#": "ReadOnly"
+          },
+          "type": "cds.String",
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@odata.on.insert": {
+            "#": "user"
+          },
+          "length": 111,
+          "@cds.persistence.name": "CREATEDBY"
+        },
+        "modifiedAt": {
+          "value": {
+            "=": "Orders.modifiedAt"
+          },
+          "type": "cds.DateTime",
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@odata.on.update": {
+            "#": "now"
+          },
+          "@cds.persistence.name": "MODIFIEDAT"
+        },
+        "modifiedBy": {
+          "value": {
+            "=": "Orders.modifiedBy"
+          },
+          "type": "cds.String",
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@odata.on.update": {
+            "#": "user"
+          },
+          "length": 111,
+          "@cds.persistence.name": "MODIFIEDBY"
+        },
+        "ID": {
+          "value": {
+            "=": "Orders.ID"
+          },
+          "key": true,
+          "@Common.Label": "Order",
+          "@Common.FieldControl": {
+            "#": "ReadOnly"
+          },
+          "type": "cds.UUID",
+          "@cds.persistence.name": "ID"
+        },
+        "book": {
+          "value": {
+            "=": "Orders.book"
+          },
+          "@Common.Label": "Book",
+          "@Common.FieldControl": {
+            "#": "ReadOnly"
+          },
+          "type": "cds.Association",
+          "target": "CatalogService.Books",
+          "foreignKeys": {
+            "ID": {
+              "path": "ID",
+              "generatedFieldName": "book_ID",
+              "@cds.persistence.name": "ID"
+            }
+          },
+          "redirected": true,
+          "@cds.persistence.name": "BOOK"
+        },
+        "country": {
+          "value": {
+            "=": "Orders.country"
+          },
+          "type": "cds.Association",
+          "target": "CatalogService.Countries",
+          "@Common.ValueList.entity": "Countries",
+          "foreignKeys": {
+            "code": {
+              "path": "code",
+              "generatedFieldName": "country_code",
+              "@cds.persistence.name": "CODE"
+            }
+          },
+          "@Common.Label": "{i18n>Country}",
+          "redirected": true,
+          "@cds.persistence.name": "COUNTRY"
+        },
+        "amount": {
+          "value": {
+            "=": "Orders.amount"
+          },
+          "@Common.Label": "Amount",
+          "@Common.FieldControl": {
+            "#": "ReadOnly"
+          },
+          "type": "cds.Integer",
+          "@cds.persistence.name": "AMOUNT"
+        },
+        "book_ID": {
+          "type": "cds.Integer",
+          "value": {
+            "=": "book_ID"
+          },
+          "@odata.foreignKey4": "book",
+          "@Common.Label": "Book",
+          "@Common.FieldControl": {
+            "#": "ReadOnly"
+          },
+          "@cds.persistence.name": "BOOK_ID"
+        },
+        "country_code": {
+          "type": "cds.String",
+          "length": 3,
+          "value": {
+            "=": "country_code"
+          },
+          "@odata.foreignKey4": "country",
+          "@Common.ValueList.entity": "Countries",
+          "@Common.Label": "{i18n>Country}",
+          "@cds.persistence.name": "COUNTRY_CODE"
+        }
+      },
+      "@UI.LineItem": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "ID"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "book"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "buyer"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "date"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "amount"
+          }
+        }
+      ],
+      "@UI.HeaderInfo.Title.Value": {
+        "=": "ID"
+      },
+      "@UI.HeaderInfo.TypeName": "Order",
+      "@UI.HeaderInfo.TypeNamePlural": "Orders",
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "ID"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "book"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "buyer"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "date"
+          }
+        },
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "amount"
+          }
+        }
+      ],
+      "@UI.Facets": [
+        {
+          "$Type": "UI.CollectionFacet",
+          "Facets": [
+            {
+              "$Type": "UI.ReferenceFacet",
+              "Label": "Assignment",
+              "Target": "@UI.Identification"
+            }
+          ],
+          "Label": "Orders"
+        }
+      ],
+      "@cds.persistence.name": "CATALOGSERVICE_ORDERS"
+    },
+    "CatalogService.Countries": {
+      "kind": "entity",
+      "source": "sap.common.Countries",
+      "elements": {
+        "code": {
+          "value": {
+            "=": "Countries.code"
+          },
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@cds.persistence.name": "CODE"
+        },
+        "name": {
+          "value": {
+            "=": "Countries.name"
+          },
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "NAME"
+        },
+        "descr": {
+          "value": {
+            "=": "Countries.descr"
+          },
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "DESCR"
+        }
+      },
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.autoexpose": true,
+      "@cds.persistence.name": "CATALOGSERVICE_COUNTRIES"
+    },
+    "my.bookshop.Books": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.Integer",
+          "@cds.persistence.name": "ID"
+        },
+        "title": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "TITLE"
+        },
+        "author": {
+          "type": "cds.Association",
+          "target": "my.bookshop.Authors",
+          "foreignKeys": {
+            "ID": {
+              "path": "ID",
+              "generatedFieldName": "author_ID",
+              "@cds.persistence.name": "ID"
+            }
+          },
+          "@cds.persistence.name": "AUTHOR"
+        },
+        "stock": {
+          "type": "cds.Integer",
+          "@cds.persistence.name": "STOCK"
+        },
+        "author_ID": {
+          "type": "cds.Integer",
+          "@odata.foreignKey4": "author",
+          "@cds.persistence.name": "AUTHOR_ID"
+        }
+      },
+      "@cds.persistence.name": "MY_BOOKSHOP_BOOKS"
+    },
+    "my.bookshop.Authors": {
+      "kind": "entity",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.Integer",
+          "@cds.persistence.name": "ID"
+        },
+        "name": {
+          "type": "cds.String",
+          "@cds.persistence.name": "NAME"
+        },
+        "books": {
+          "type": "cds.Association",
+          "target": "my.bookshop.Books",
+          "cardinality": {
+            "targetMax": "*"
+          },
+          "onCond": {
+            "op": "=",
+            "args": [
+              {
+                "=": "books.author"
+              },
+              {
+                "=": "$self"
+              }
+            ]
+          },
+          "on": "books.author = $self",
+          "@cds.persistence.name": "BOOKS"
+        }
+      },
+      "@cds.persistence.name": "MY_BOOKSHOP_AUTHORS"
+    },
+    "my.bookshop.Orders": {
+      "kind": "entity",
+      "includes": [
+        "managed"
+      ],
+      "elements": {
+        "createdAt": {
+          "type": "cds.DateTime",
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@odata.on.insert": {
+            "#": "now"
+          },
+          "@cds.persistence.name": "CREATEDAT"
+        },
+        "createdBy": {
+          "type": "cds.String",
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@odata.on.insert": {
+            "#": "user"
+          },
+          "length": 111,
+          "@cds.persistence.name": "CREATEDBY"
+        },
+        "modifiedAt": {
+          "type": "cds.DateTime",
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@odata.on.update": {
+            "#": "now"
+          },
+          "@cds.persistence.name": "MODIFIEDAT"
+        },
+        "modifiedBy": {
+          "type": "cds.String",
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@odata.on.update": {
+            "#": "user"
+          },
+          "length": 111,
+          "@cds.persistence.name": "MODIFIEDBY"
+        },
+        "ID": {
+          "key": true,
+          "type": "cds.UUID",
+          "@cds.persistence.name": "ID"
+        },
+        "book": {
+          "type": "cds.Association",
+          "target": "my.bookshop.Books",
+          "foreignKeys": {
+            "ID": {
+              "path": "ID",
+              "generatedFieldName": "book_ID",
+              "@cds.persistence.name": "ID"
+            }
+          },
+          "@cds.persistence.name": "BOOK"
+        },
+        "country": {
+          "type": "cds.Association",
+          "target": "sap.common.Countries",
+          "@Common.ValueList.entity": "Countries",
+          "foreignKeys": {
+            "code": {
+              "path": "code",
+              "generatedFieldName": "country_code",
+              "@cds.persistence.name": "CODE"
+            }
+          },
+          "@Common.Label": "{i18n>Country}",
+          "@cds.persistence.name": "COUNTRY"
+        },
+        "amount": {
+          "type": "cds.Integer",
+          "@cds.persistence.name": "AMOUNT"
+        },
+        "book_ID": {
+          "type": "cds.Integer",
+          "@odata.foreignKey4": "book",
+          "@cds.persistence.name": "BOOK_ID"
+        },
+        "country_code": {
+          "type": "cds.String",
+          "length": 3,
+          "@odata.foreignKey4": "country",
+          "@Common.ValueList.entity": "Countries",
+          "@Common.Label": "{i18n>Country}",
+          "@cds.persistence.name": "COUNTRY_CODE"
+        }
+      },
+      "@cds.persistence.name": "MY_BOOKSHOP_ORDERS"
+    },
+    "Language": {
+      "kind": "type",
+      "type": "cds.Association",
+      "target": "sap.common.Languages",
+      "@Common.ValueList.entity": "Languages",
+      "foreignKeys": {
+        "code": {
+          "path": "code",
+          "@cds.persistence.name": "CODE"
+        }
+      },
+      "@Common.Label": "{i18n>Language}",
+      "@cds.persistence.name": "LANGUAGE"
+    },
+    "Currency": {
+      "kind": "type",
+      "type": "cds.Association",
+      "target": "sap.common.Currencies",
+      "@Common.ValueList.entity": "Currencies",
+      "foreignKeys": {
+        "code": {
+          "path": "code",
+          "@cds.persistence.name": "CODE"
+        }
+      },
+      "@Common.Label": "{i18n>Currency}",
+      "@cds.persistence.name": "CURRENCY"
+    },
+    "Country": {
+      "kind": "type",
+      "type": "cds.Association",
+      "target": "sap.common.Countries",
+      "@Common.ValueList.entity": "Countries",
+      "foreignKeys": {
+        "code": {
+          "path": "code",
+          "generatedFieldName": "country_code",
+          "@cds.persistence.name": "CODE"
+        }
+      },
+      "@Common.Label": "{i18n>Country}",
+      "@cds.persistence.name": "COUNTRY"
+    },
+    "sap.common": {
+      "kind": "context"
+    },
+    "sap.common.Languages": {
+      "kind": "entity",
+      "includes": [
+        "CodeList"
+      ],
+      "elements": {
+        "code": {
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@cds.persistence.name": "CODE"
+        },
+        "name": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "NAME"
+        },
+        "descr": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "DESCR"
+        }
+      },
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.autoexpose": true,
+      "@cds.persistence.name": "SAP_COMMON_LANGUAGES"
+    },
+    "sap.common.Countries": {
+      "kind": "entity",
+      "includes": [
+        "CodeList"
+      ],
+      "elements": {
+        "code": {
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@cds.persistence.name": "CODE"
+        },
+        "name": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "NAME"
+        },
+        "descr": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "DESCR"
+        }
+      },
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.autoexpose": true,
+      "@cds.persistence.name": "SAP_COMMON_COUNTRIES"
+    },
+    "sap.common.Currencies": {
+      "kind": "entity",
+      "includes": [
+        "CodeList"
+      ],
+      "elements": {
+        "code": {
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@cds.persistence.name": "CODE"
+        },
+        "name": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "NAME"
+        },
+        "descr": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "DESCR"
+        }
+      },
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.autoexpose": true,
+      "@cds.persistence.name": "SAP_COMMON_CURRENCIES"
+    },
+    "CodeList": {
+      "abstract": true,
+      "kind": "entity",
+      "elements": {
+        "code": {
+          "key": true,
+          "type": "cds.String",
+          "length": 3,
+          "@cds.persistence.name": "CODE"
+        },
+        "name": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "NAME"
+        },
+        "descr": {
+          "localized": true,
+          "type": "cds.String",
+          "@cds.persistence.name": "DESCR"
+        }
+      },
+      "@UI.Identification": [
+        {
+          "$Type": "UI.DataField",
+          "Value": {
+            "=": "name"
+          }
+        }
+      ],
+      "@cds.autoexpose": true,
+      "@cds.persistence.name": "CODELIST"
+    },
+    "managed": {
+      "kind": "type",
+      "elements": {
+        "createdAt": {
+          "type": "cds.DateTime",
+          "@cds.on.insert": {
+            "=": "$now"
+          },
+          "@odata.on.insert": {
+            "#": "now"
+          },
+          "@cds.persistence.name": "CREATEDAT"
+        },
+        "createdBy": {
+          "type": "cds.String",
+          "@cds.on.insert": {
+            "=": "$user"
+          },
+          "@odata.on.insert": {
+            "#": "user"
+          },
+          "length": 111,
+          "@cds.persistence.name": "CREATEDBY"
+        },
+        "modifiedAt": {
+          "type": "cds.DateTime",
+          "@cds.on.update": {
+            "=": "$now"
+          },
+          "@odata.on.update": {
+            "#": "now"
+          },
+          "@cds.persistence.name": "MODIFIEDAT"
+        },
+        "modifiedBy": {
+          "type": "cds.String",
+          "@cds.on.update": {
+            "=": "$user"
+          },
+          "@odata.on.update": {
+            "#": "user"
+          },
+          "length": 111,
+          "@cds.persistence.name": "MODIFIEDBY"
+        }
+      },
+      "@cds.persistence.name": "MANAGED"
+    },
+    "temporal": {
+      "kind": "type",
+      "elements": {
+        "valid": {
+          "type": "Period",
+          "@cds.persistence.name": "VALID"
+        }
+      },
+      "@cds.persistence.name": "TEMPORAL"
+    },
+    "Period": {
+      "kind": "type",
+      "elements": {
+        "start": {
+          "type": "cds.DateTime",
+          "@cds.persistence.name": "START"
+        },
+        "end": {
+          "type": "cds.DateTime",
+          "@cds.persistence.name": "END"
+        }
+      },
+      "@cds.persistence.name": "PERIOD"
+    },
+    "User": {
+      "kind": "type",
+      "type": "cds.String",
+      "length": 111,
+      "@cds.persistence.name": "USER"
+    }
+  },
+  "version": {
+    "creator": "CDS Compiler v1.1.1",
+    "csn": "0.1.0"
+  },
+  "@sql_mapping": "plain"
+}

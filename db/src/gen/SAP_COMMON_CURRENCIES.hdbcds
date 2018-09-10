@@ -1,0 +1,5 @@
+entity SAP_COMMON_CURRENCIES {
+  key CODE : String(3);
+  NAME : String(5000);
+  DESCR : String(5000);
+};

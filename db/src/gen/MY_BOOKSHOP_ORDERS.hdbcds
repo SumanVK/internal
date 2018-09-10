@@ -1,0 +1,14 @@
+using MY_BOOKSHOP_BOOKS as MY_BOOKSHOP_BOOKS;
+using SAP_COMMON_COUNTRIES as SAP_COMMON_COUNTRIES;
+entity MY_BOOKSHOP_ORDERS {
+  CREATEDAT : UTCDateTime;
+  CREATEDBY : String(111);
+  MODIFIEDAT : UTCDateTime;
+  MODIFIEDBY : String(111);
+  key ID : String(36);
+  BOOK : association to MY_BOOKSHOP_BOOKS on BOOK.ID = BOOK_ID;
+  COUNTRY : association to SAP_COMMON_COUNTRIES on COUNTRY.CODE = COUNTRY_CODE;
+  AMOUNT : Integer;
+  BOOK_ID : Integer;
+  COUNTRY_CODE : String(3);
+};
